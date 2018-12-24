@@ -1,5 +1,6 @@
 import * as R from 'ramda';
 import {Maybe} from 'simple-maybe';
+import {Label} from './audacity-labels';
 
 const items = {
   startTime: 0,
@@ -46,9 +47,24 @@ const stringToObj = (lines: any[]): {} => lines.map(
       frequencyCeiling: Number(getLineItem(line, items.frequencyCeiling))
     }));
 
+const lineOne = (label: Label) => `${label.startTime.toFixed(6)}\t${
+    label.endTime.toFixed(6)}\t${label.labelText}\n`;
+const lineTwo = (label: Label) => `\\\t${label.frequencyFloor.toFixed(6)}\t${
+    label.frequencyCeiling.toFixed(6)}\n`;
+
+const lineItem = (label: Label) =>
+    label.frequencyFloor || label.frequencyCeiling ?
+    lineOne(label) + lineTwo(label) :
+    lineOne(label);
+
+const labelsToString = (label: Label[]) =>
+    label.reduce((acc: string, cur: Label) => acc + lineItem(cur), ``);
+
 const fuseSpectrograms = R.pipe(bifurcateLines, patchLabels, stringToObj);
 
-const create = (data: string): any =>
+const parse = (data: string): any =>
     Maybe.of(data).map(splitLines).map(fuseSpectrograms);
 
-export {create, bifurcateLines};
+const stringify = (labels: Label[]) => Maybe.of(labels).map(labelsToString);
+
+export {parse, stringify, bifurcateLines};

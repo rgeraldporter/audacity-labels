@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import {bifurcateLines, create} from './index';
+import {bifurcateLines, parse, stringify} from './index';
 
 describe('The parser', () => {
   it('can bifurcate the lines', () => {
@@ -34,7 +34,7 @@ describe('The parser', () => {
 
   it('handle a label file with spectrogram lines', () => {
     const labelsFile = fs.readFileSync('./assets/test-label-1.txt', 'utf8');
-    const labels = create(labelsFile).join();
+    const labels = parse(labelsFile).join();
     const firstLabel = labels[0];
     const sixthLabel = labels[5];
 
@@ -43,19 +43,35 @@ describe('The parser', () => {
     expect(sixthLabel.labelText).toBe('CAGO 3');
   });
 
+  it('reconstruct a label file with spectrogram lines', () => {
+    const labelsFile = fs.readFileSync('./assets/test-label-1.txt', 'utf8');
+    const labels = parse(labelsFile).join();
+    const stringified = stringify(labels).join();
+
+    expect(stringified).toEqual(labelsFile);
+  });
+
   it('handle a label file without spectrogram lines', () => {
     const labelsFile = fs.readFileSync('./assets/test-label-2.txt', 'utf8');
-    const labels = create(labelsFile).join();
+    const labels = parse(labelsFile).join();
     const firstLabel = labels[0];
 
     expect(firstLabel.endTime).toBe(396.609885);
     expect(firstLabel.labelText).toBe('BCCH');
   });
 
+  it('reconstruct a label file without spectrogram lines', () => {
+    const labelsFile = fs.readFileSync('./assets/test-label-2.txt', 'utf8');
+    const labels = parse(labelsFile).join();
+    const stringified = stringify(labels).join();
+
+    expect(stringified).toEqual(labelsFile);
+  });
+
   it('handle a label file with a mix of labels with and without spectrographic selections',
      () => {
        const labelsFile = fs.readFileSync('./assets/test-label-3.txt', 'utf8');
-       const labels = create(labelsFile).join();
+       const labels = parse(labelsFile).join();
        const thirdLabel = labels[2];
        const fourthLabel = labels[3];
 
@@ -68,9 +84,18 @@ describe('The parser', () => {
        expect(fourthLabel.labelText).toBe('AMCR');
      });
 
+  it('reconstruct a label file with a mix of labels with and without spectrographic selections',
+     () => {
+       const labelsFile = fs.readFileSync('./assets/test-label-3.txt', 'utf8');
+       const labels = parse(labelsFile).join();
+       const stringified = stringify(labels).join();
+
+       expect(stringified).toEqual(labelsFile);
+     });
+
   it('should not treat the last empty line as a label', () => {
     const labelsFile = fs.readFileSync('./assets/test-label-3.txt', 'utf8');
-    const labels = create(labelsFile).join();
+    const labels = parse(labelsFile).join();
     const sixthLabel = labels[5];
 
     expect(sixthLabel).toBe(undefined);

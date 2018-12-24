@@ -1,6 +1,6 @@
 {
   "name": "audacity-labels",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Import audacity label file to JS Object",
   "main": "build/src/index.js",
   "scripts": {
@@ -31,6 +31,9 @@
   "files": [
     "build/src/index.d.ts",
     "build/src/index.js",
-    "build/src/index.js.map"
+    "build/src/index.js.map",
+    "build/src/audacity-labels.d.ts",
+    "build/src/audacity-labels.js",
+    "build/src/audacity-labels.js.map"
   ]
 }
